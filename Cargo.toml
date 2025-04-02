@@ -1,0 +1,4 @@
+[workspace]
+members = ["examples", "rx-observer", "rx-observer-macros"]
+resolver = "3"
+
