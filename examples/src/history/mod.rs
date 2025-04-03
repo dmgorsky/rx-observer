@@ -48,8 +48,6 @@ pub fn history_context_example() {
 
     //decorated with 'request' in function parameters
     simple_fun(&q);
-    // let q1 = q;
-    // println!("{}", q1);
     let _index = k + l + q;
     let my_struct = SampleStruct {
         field1: 42,
@@ -60,6 +58,22 @@ pub fn history_context_example() {
     _index2 = k + l + q;
 
     let _struct_request = my_struct;
+}
+
+#[decorate_vars(
+    context = HISTORYCONTEXT,
+    propose = [q, k, _index2],
+    register = [k, l, ss],
+    request = [q]
+)]
+pub fn shared_history_context_example() {
+    let k = 1;
+    let l = 2;
+    let q = 3;
+    let ss = "hello";
+    let _ss2 = ss; // UNUSED VARIABLES ARE OPTIMIZED AND NOT PARSED BY MACRO
+    let mut _index2 = 0;
+    _index2 = k + l + q;
 }
 
 pub fn report_display() {
