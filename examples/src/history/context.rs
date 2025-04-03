@@ -56,15 +56,14 @@ impl HistoryContext {
 impl<'a> ObserverContext<'a> for HistoryContext {
     fn register<T>(&self, identifier: T, fn_name: &'a str, ident_name: &'a str, ident_type: &'a str) -> T
     where
-        T: Display + Clone,
+        T: Display,
     {
-        let ident_clone = identifier.clone();
         let change_op = ChangeRecord {
             timestamp: Local::now(),
             operation: "Registering".to_string(),
             fn_name: fn_name.to_string(),
             ident_name: ident_name.to_string(),
-            ident_value: ident_clone.to_string(),
+            ident_value: identifier.to_string(),
             type_name: Some(ident_type.to_string()),
         };
         self.changes_log.write().push(change_op);

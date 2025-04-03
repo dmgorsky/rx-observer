@@ -8,7 +8,7 @@ pub trait ObserverContext<'a> {
     ///the delegate receiving an identifier data from the left part of expression
     fn register<T>(&self, identifier: T, fn_name: &'a str, ident_name: &'a str, ident_type: &'a str) -> T
     where
-        T: Display + Clone,
+        T: Display,
     {
         let now = SystemTime::now()
             .duration_since(UNIX_EPOCH)
@@ -16,8 +16,7 @@ pub trait ObserverContext<'a> {
             .as_nanos();
         let ident_path = format!("{fn_name}/{ident_name}");
 
-        let ident_clone = identifier.clone();
-        let ident_value = ident_clone.to_string();
+        let ident_value = identifier.to_string();
 
         let operation = format!("{now}|Registering|‹{ident_path}›({ident_type})={ident_value}");
 
@@ -27,7 +26,7 @@ pub trait ObserverContext<'a> {
     ///the delegate receiving an identifier data from the left part of a statement
     fn propose<T>(&self, identifier: T, fn_name: &'a str, ident_name: &'a str) -> T
     where
-        T: Display + Clone,
+        T: Display,
     {
         let now = SystemTime::now()
             .duration_since(UNIX_EPOCH)

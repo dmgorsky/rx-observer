@@ -111,11 +111,10 @@ impl<'a> ObserverContext<'a> for FormulasContext {
         ident_type: &'a str,
     ) -> T
     where
-        T: Display + Clone + ToString,
+        T: Display + ToString,
     {
         // eprintln!("Registering ‹{fn_name}/{ident_name}›({}): {}", ident_type, &x);
-        let ident_clone = identifier.clone();
-        let ident_value = ident_clone.to_string();
+        let ident_value = identifier.to_string();
         // let ident_path = format!("{}/{}({})", fn_name, ident_name, ident_type);
         let ident_path = IdentPath {
             sheet_fn_name: fn_name.to_string(),
@@ -134,12 +133,11 @@ impl<'a> ObserverContext<'a> for FormulasContext {
 
     fn propose<'b, T>(&self, identifier: T, fn_name: &str, ident_name: &str) -> T
     where
-        T: Display + Clone,
+        T: Display ,
     {
         let type_name = std::any::type_name_of_val(&identifier).to_string();
         // eprintln!("Proposing ‹{fn_name}/{ident_name}›({type_name}): {}", &x);
-        let ident_clone = identifier.clone();
-        let ident_value = ident_clone.to_string();
+        let ident_value = identifier.to_string();
         // let ident_path = format!("{}/{}({})", fn_name, ident_name, type_name);
         let ident_path = IdentPath {
             sheet_fn_name: fn_name.to_string(),
