@@ -15,7 +15,6 @@ struct MacroParams {
     request: Punctuated<Ident, Token![,]>,
 }
 
-
 impl Parse for MacroParams {
     /// very simple streaming parsing of #[decorate_vars()] parameters
     /// e.g.
@@ -188,21 +187,15 @@ impl Fold for DecoratingFolder {
                     .map(|arg| -> Expr {
                         // Recursively transform the argument first
                         let transformed_arg = self.fold_expr(arg);
-                        let var_ident = if let Expr::Path(expr_path) = &transformed_arg {
-                            if expr_path.path.segments.len() == 1
-                                && expr_path.path.leading_colon.is_none()
+                        let var_ident = match &transformed_arg {
+                            Expr::Path(ExprPath { path, .. })
+                                if path.segments.len() == 1
+                                    && path.leading_colon.is_none()
+                                    && path.segments[0].arguments.is_empty() =>
                             {
-                                let segment = &expr_path.path.segments[0];
-                                if segment.arguments.is_empty() {
-                                    Some(segment.ident.clone())
-                                } else {
-                                    None
-                                }
-                            } else {
-                                None
+                                Some(path.segments[0].ident.clone())
                             }
-                        } else {
-                            None
+                            _ => None,
                         };
                         if var_ident.is_some_and(|ident| self.request.contains(&ident)) {
                             syn::parse_quote! { #self_context.request(#transformed_arg) }
@@ -211,6 +204,7 @@ impl Fold for DecoratingFolder {
                         }
                     })
                     .collect();
+
                 Expr::Call(ExprCall {
                     attrs: expr_call.attrs,
                     func,
