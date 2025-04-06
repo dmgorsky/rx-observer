@@ -9,7 +9,7 @@ pub struct HistoryContext {
     changes_log: RwLock<Vec<ChangeRecord>>,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Clone)]
 enum OperationType {
     Register,
     Propose,
@@ -26,7 +26,7 @@ impl Display for OperationType {
     }
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Clone)]
 pub struct ChangeRecord {
     timestamp: DateTime<Local>,
     operation: OperationType,
@@ -93,6 +93,13 @@ impl HistoryContext {
     ///clears the context history log
     pub fn clear(&self) {
         self.changes_log.write().clear();
+    }
+}
+
+impl Iterator for HistoryContext {
+    type Item = ChangeRecord;
+    fn next(&mut self) -> Option<Self::Item> {
+        self.changes_log.read().iter().next().cloned()
     }
 }
 
