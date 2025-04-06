@@ -1,0 +1,6 @@
+[package]
+name = "rx_observer"
+edition = "2024"
+
+[dependencies]
+rx_observer_macros = {path = "../rx-observer-macros" }
