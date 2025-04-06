@@ -8,9 +8,25 @@ pub struct HistoryContext {
     changes_log: RwLock<Vec<ChangeRecord>>,
 }
 
+enum OperationType {
+    Register,
+    Propose,
+    Request,
+}
+
+impl Display for OperationType {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        f.write_str(match self {
+            OperationType::Register => "registering",
+            OperationType::Propose => "proposing",
+            OperationType::Request => "requesting",
+        })
+    }
+}
+
 struct ChangeRecord {
     timestamp: DateTime<Local>,
-    operation: String,
+    operation: OperationType,
     fn_name: String,
     ident_name: String,
     ident_value: String,
@@ -54,13 +70,19 @@ impl HistoryContext {
 }
 
 impl<'a> ObserverContext<'a> for HistoryContext {
-    fn register<T>(&self, identifier: T, fn_name: &'a str, ident_name: &'a str, ident_type: &'a str) -> T
+    fn register<T>(
+        &self,
+        identifier: T,
+        fn_name: &'a str,
+        ident_name: &'a str,
+        ident_type: &'a str,
+    ) -> T
     where
         T: Display,
     {
         let change_op = ChangeRecord {
             timestamp: Local::now(),
-            operation: "Registering".to_string(),
+            operation: OperationType::Register,
             fn_name: fn_name.to_string(),
             ident_name: ident_name.to_string(),
             ident_value: identifier.to_string(),
@@ -76,7 +98,7 @@ impl<'a> ObserverContext<'a> for HistoryContext {
     {
         let change_op = ChangeRecord {
             timestamp: Local::now(),
-            operation: "Proposing".to_string(),
+            operation: OperationType::Propose,
             fn_name: fn_name.to_string(),
             ident_name: ident_name.to_string(),
             ident_value: format!("{}", &identifier),
@@ -84,7 +106,7 @@ impl<'a> ObserverContext<'a> for HistoryContext {
         };
 
         self.changes_log.write().push(change_op);
-        
+
         identifier
     }
 
@@ -95,7 +117,7 @@ impl<'a> ObserverContext<'a> for HistoryContext {
     {
         let change_op = ChangeRecord {
             timestamp: Local::now(),
-            operation: "Requesting".to_string(),
+            operation: OperationType::Request,
             fn_name: fn_name.to_string(),
             ident_name: ident_name.to_string(),
             ident_value: format!("{}", &identifier),
