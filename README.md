@@ -96,8 +96,17 @@ pub fn history_context_example() {
 
 </details>
 
-It accepts a context (object conforming `ObserverContext` trait in `rx-observer`/lib.rs) and wraps specified variables to proxy them into the context using `propose` for vars in `let` statements, `register` for assignments and `request` for reading the value. (Naming suggestions are welcome). Notice: `register` is lazy on accessing variables and also isn't processed further in `request`, i.e. var in `register`: `request` won't work; var not in `register`, and in `request`: `request` works.
-To use it, we implement `ObserverContext` and provide the instance to a macro.
+It accepts a context (object conforming `ObserverContext` trait in `rx-observer`/lib.rs) and wraps specified variables to proxy them into the context using
+
+* `propose` for vars in `let` statements, 
+* `register` for assignments and 
+* `request` for reading the value.
+
+(Naming suggestions are welcome).
+
+> Note: `register` is lazy on accessing variables and also isn't processed further in `request`, i.e. var in `register`: `request` won't work; var not in `register`, and in `request`: `request` works.
+
+To use this, we implement `ObserverContext` and provide the instance to a macro.
 
 So far macro relies on 'Display' and 'FromStr' to work with the variables (however trying to get the type at compile time), so one need to either implement those traits, or use something like `serde` to do heavy lifting.
 
@@ -166,12 +175,15 @@ impl<'a> ObserverContext<'a> for SnapshotContext {
 
 ### How can this be used?
 
+In short, you decorate any function(s), specifying variables and providing the receiving context.
+These variables become observed and passed into this context on their creation/modification/reading.
+
 For our needs we can implement `ObserverContext` providing the delegates `propose`, `register`, `request`. When using a macro, they are provided with minimal metadata needed. (Again, suggestions are welcome!) 
 
 The `examples` project shows some primitive examples of the following ideas:
 
 * `Snapshot`-like context uses its `ObserverContext` delegates () to store variables' latest values in a hashmap. Say, we modify monitored variables throughout the test and get the report on their values.
-* `History`-like context implements `ObserverContext` to store every call in a log of variables' changes. We can implement structured logging on behaviour.
+* `History`-like context implements `ObserverContext` to store every call in a log of variables' changes. We can implement structured logging on behaviour. Also, this example shows using one context in multiple functions.
 * `Formulas`-like context utilizes `xlformula-engine` crate in its context to be able to calculate a variable from excel-like formula on `request` using variables added to context by `propose`, `register`, and also the formulas provided in the context itself.
 * ???
 * PROFIT!
