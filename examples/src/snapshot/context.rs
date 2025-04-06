@@ -1,7 +1,7 @@
 use parking_lot::RwLock;
 use rx_observer::ObserverContext;
 use std::collections::HashMap;
-use std::fmt::{Debug, Display};
+use std::fmt::Display;
 
 pub struct SnapshotContext {
     vars: RwLock<HashMap<String, String>>,

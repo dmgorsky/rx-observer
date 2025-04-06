@@ -80,6 +80,10 @@ pub fn report_display() {
     HISTORYCONTEXT.report_data().iter().for_each(|c|println!("{}", c));
 }
 
+pub fn report_json_display() {
+    HISTORYCONTEXT.report_as_json().iter().for_each(|c|println!("{}", c));
+}
+
 pub fn report_data() -> Vec<String> {
     HISTORYCONTEXT.report_data()
 }

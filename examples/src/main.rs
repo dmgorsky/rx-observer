@@ -20,6 +20,8 @@ fn main() {
     println!("shared context:");
     history::shared_history_context_example();
     history::report_display();
+    println!("json report:");
+    history::report_json_display();
     println!("\n===FORMULAS CONTEXT===");
     println!("When a specified variable is used in the code, it is calculated dynamically with excel-like formula\n");
     xlformulas::xlformulas_context_example();

@@ -1,6 +1,7 @@
 use chrono::prelude::*;
 use parking_lot::RwLock;
 use rx_observer::ObserverContext;
+use serde::Serialize;
 use std::fmt::{Debug, Display, Formatter};
 use std::str::FromStr;
 
@@ -8,6 +9,7 @@ pub struct HistoryContext {
     changes_log: RwLock<Vec<ChangeRecord>>,
 }
 
+#[derive(Serialize)]
 enum OperationType {
     Register,
     Propose,
@@ -24,7 +26,8 @@ impl Display for OperationType {
     }
 }
 
-struct ChangeRecord {
+#[derive(Serialize)]
+pub struct ChangeRecord {
     timestamp: DateTime<Local>,
     operation: OperationType,
     fn_name: String,
@@ -54,6 +57,12 @@ impl Display for ChangeRecord {
     }
 }
 
+/*
+In our implementation we can have any methods
+besides necessary to `ObserverContext`
+that can be needed for our usage
+e.g. see below
+ */
 impl HistoryContext {
     pub fn new() -> Self {
         HistoryContext {
@@ -66,6 +75,24 @@ impl HistoryContext {
             .iter()
             .map(|change| change.to_string())
             .collect::<Vec<String>>()
+    }
+
+    pub fn report_as_json(&self) -> Vec<String> {
+        self.changes_log
+            .read()
+            .iter()
+            .flat_map(serde_json::to_string)
+            .collect()
+    }
+
+    ///returns the length of inner history log vector
+    pub fn log_length(&self) -> usize {
+        self.changes_log.read().len()
+    }
+
+    ///clears the context history log
+    pub fn clear(&self) {
+        self.changes_log.write().clear();
     }
 }
 
